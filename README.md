@@ -112,3 +112,5 @@ Autofavorite for Blue Ocean	 Ожидает
 Jersey 2 API	 Ожидает
 Jira	 Ожидает
 JIRA Integration for Blue Ocean	 Ожидает
+
+https://plugins.jenkins.io/docker-slaves/
