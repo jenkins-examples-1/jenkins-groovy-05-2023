@@ -1,5 +1,28 @@
 version: '2'
 services:
+  namenode:
+    image: bde2020/hadoop-namenode:2.0.0-hadoop3.2.1-java8
+    container_name: namenode
+    restart: always
+    ports:
+      - 9870:9870
+      - 9000:9000
+    volumes:
+      - hadoop_namenode:/hadoop/dfs/name
+    environment:
+      - CLUSTER_NAME=test
+    env_file:
+      - ./hadoop.env
+  datanode:
+    image: bde2020/hadoop-datanode:2.0.0-hadoop3.2.1-java8
+    container_name: datanode
+    restart: always
+    volumes:
+      - hadoop_datanode:/hadoop/dfs/data
+    environment:
+      SERVICE_PRECONDITION: "namenode:9870"
+    env_file:
+      - ./hadoop.env
   jenkins:
     image: docker.io/bitnami/jenkins:latest
     ports:
@@ -8,15 +31,8 @@ services:
       - '50000:50000'
     volumes:
       - 'jenkins_data:/bitnami/jenkins'
-  agent:
-    image: jenkins/ssh-agent:jdk11
-    privileged: true
-    user: root
-    container_name: agent
-    ports:
-      - '9081:22'
-    environment:
-      - JENKINS_AGENT_SSH_PUBKEY=ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDHKPJYf7x9j+rkzjmdSBOCP1HGoSTKCJ50aSeiJ4XGRQTzHvVVWv3mt6eakux7IKrVbipJ9iIZPKYUrgcX1VJLWgJhskPMtz/pkKnwmmJsqc6yqB7RQmlf9jSmxfzbVWVAS+d1bQFnktp4l1djQEnI/aUTAXuXfwwy7pUqIJDO2Cc89qgp1lXrLXnwwc3XSvj0xdynEaQ+wNCjGZz2iwZ8doSOCGVTm6hbrlPykqAurdwbu4a9mDzKamH1cGzTMRFVZM7UoejOKQOdUl3tR7EzdnLlrz9F47e69MsfrDwNnJ6SUkkv6GJGY871R1lOkivKdWXJTZwrFVGAceGZAGgbbN/Pm8ET1YvMlwob+LjzwMS6J/ouFJ98fs68c3huTmvn6WjBb4pTvRMAj57k/1jwB0rzF2gykywdqbJmAgbRtYRdz7y9+rxaoVAF5Eh2ZdY49vdc6MNFkd8i9PD+67YQmAbehz+ONr9ALKjqrmnKTaWwbYBtq/Hndpw+VvnXni0= root@aaf5f781875a
 volumes:
   jenkins_data:
     driver: local
+  hadoop_namenode:
+  hadoop_datanode:
