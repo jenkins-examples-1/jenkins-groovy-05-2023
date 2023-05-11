@@ -1,0 +1,27 @@
+package job
+
+def execute() {
+    node {
+        String revision = stage('Checkout') {
+            checkout scm
+            echo env.OS_VERSION
+            return "master@123"
+        }
+        stage('build') {
+            sh "mvn clean package -DskipTests -DgitRevision=$revision"
+        }
+
+        stage('test') {
+            sh "mvn verify -DgitRevision=$revision"
+        }
+
+        stage('Process output') {
+            if (fileExists('output') && readFile('output') == 'FAILED!!!') {
+                currentBuild.result = 'FAILURE'
+                error 'Build failed'
+            }
+        }
+    }
+}
+
+return this
